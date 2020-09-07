@@ -1,0 +1,12 @@
+# PG使用的是debian buster-slim 镜像，使用国内阿里云镜像替换加速
+# 详见: https://developer.aliyun.com/mirror/debian?spm=a2c6h.13651102.0.0.53322f70RZllhs
+## 以下是debian10的镜像源，官方文档暂时还没更新
+
+deb http://mirrors.aliyun.com/debian/ buster main non-free contrib
+deb-src http://mirrors.aliyun.com/debian/ buster main non-free contrib
+deb http://mirrors.aliyun.com/debian-security buster/updates main
+deb-src http://mirrors.aliyun.com/debian-security buster/updates main
+deb http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
+deb-src http://mirrors.aliyun.com/debian/ buster-updates main non-free contrib
+deb http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib
+deb-src http://mirrors.aliyun.com/debian/ buster-backports main non-free contrib

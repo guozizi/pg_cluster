@@ -1,0 +1,75 @@
+version: "3"
+
+volumes:
+    postgres:
+    postgres_standby:
+    debian_apt_sources:
+
+networks:
+   pg_cluster:
+      ipam:
+         config:
+            - subnet: 172.80.0.0/16
+
+services:
+    postgres:
+        build: ./postgres
+        environment:
+            POSTGRES_PASSWORD: pg_pwd
+            POSTGRES_USER: postgres
+            POSTGRES_DB: test
+        volumes:
+            - postgres:/var/lib/postgresql/data
+            - debian_apt_sources:/etc/apt
+        shm_size: 256M
+        ports:
+            - "5432:5432"
+        container_name: postgres
+        hostname: postgres_container
+        networks:
+            pg_cluster:
+                ipv4_address: 172.80.0.2
+        restart: always
+        command: postgres -c config_file=/etc/postgresql/postgresql.conf
+
+    postgres_standby:
+        build: ./postgres_standby
+        environment:
+            PGDATA : /var/lib/postgresql/replicate_data
+            POSTGRES_PASSWORD: pg_pwd
+        volumes:
+             - postgres_standby:/var/lib/postgresql/replicate_data
+             - debian_apt_sources:/etc/apt
+        depends_on:
+            - postgres
+        container_name: postgres_standby
+        hostname: postgres_standby_container
+        networks:
+            pg_cluster:
+                ipv4_address: 172.80.0.3
+        restart: always
+        command: postgres -c config_file=/etc/postgresql/postgresql.conf
+
+    pgpool:
+        build: ./pgpool
+        ports: 
+            - "8001:5432"
+        environment:
+            PCP_USER: pcp
+            PCP_PASSWORD: pcp_pwd
+            WAIT_BACKEND_TIMEOUT: 60
+            CHECK_USER: postgres
+            CHECK_PASSWORD: pg_pwd
+            CHECK_PGCONNECT_TIMEOUT: 3
+            FAILOVER_COMMAND: /usr/local/etc/failover.sh %H %d 
+            DB_USERS: postgres:pg_pwd
+            BACKENDS: "0:172.80.0.2:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:172.80.0.3:5432:1:/var/lib/postgresql/replicate_data:ALLOW_TO_FAILOVER"
+            CONFIGS: "num_init_children:250,max_pool:4"        
+        depends_on:
+            - postgres_standby
+        container_name: pgpool
+        hostname: pgpool_container
+        networks:
+            pg_cluster:
+                ipv4_address: 172.80.0.4
+        restart: always
