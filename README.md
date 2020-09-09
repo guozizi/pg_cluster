@@ -4,7 +4,7 @@
 
        docker-compose up -d --build
 
-2. 检查主从是否配置好：
+2. 检查主从是否配置好（需要稍等一会，up40s左右）：
 
        docker exec -it postgres /bin/sh -c "psql -U postgres -x -c \"select * from pg_stat_replication\""
        
