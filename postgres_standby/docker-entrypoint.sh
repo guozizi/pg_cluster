@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-su - postgres -s /standby_deploy.sh   # 从节点配置
+/standby_deploy.sh   # 从节点配置
 
 set -Eeo pipefail
 # TODO swap to -Eeuo pipefail above (after handling all potentially-unset variables)

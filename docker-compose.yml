@@ -35,10 +35,10 @@ services:
     postgres_standby:
         build: ./postgres_standby
         environment:
-            PGDATA : /var/lib/postgresql/replicate_data
+            PGDATA : /var/lib/postgresql/data
             POSTGRES_PASSWORD: pg_pwd
         volumes:
-             - postgres_standby:/var/lib/postgresql/replicate_data
+             - postgres_standby:/var/lib/postgresql/data
              - debian_apt_sources:/etc/apt
         depends_on:
             - postgres
@@ -52,7 +52,7 @@ services:
 
     pgpool:
         build: ./pgpool
-        ports: 
+        ports:
             - "8001:5432"
         environment:
             PCP_USER: pcp
@@ -61,9 +61,9 @@ services:
             CHECK_USER: postgres
             CHECK_PASSWORD: pg_pwd
             CHECK_PGCONNECT_TIMEOUT: 3
-            FAILOVER_COMMAND: /usr/local/etc/failover.sh %H %d 
+            FAILOVER_COMMAND: /usr/local/etc/failover.sh %H %d
             DB_USERS: postgres:pg_pwd
-            BACKENDS: "0:172.80.0.2:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:172.80.0.3:5432:1:/var/lib/postgresql/replicate_data:ALLOW_TO_FAILOVER"
+            BACKENDS: "0:172.80.0.2:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER,1:172.80.0.3:5432:1:/var/lib/postgresql/data:ALLOW_TO_FAILOVER"
             CONFIGS: "num_init_children:250,max_pool:4"        
         depends_on:
             - postgres_standby

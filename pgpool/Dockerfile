@@ -1,4 +1,4 @@
-From postdock/pgpool:latest
+FROM postdock/pgpool:latest
 
 COPY sources.list /etc/apt/sources.list
 RUN apt-get update \

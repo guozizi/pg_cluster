@@ -7,7 +7,7 @@ echo "root" | su - root /etc/init.d/ssh start
 sleep 20s
 
 PRIMARY_IP="172.80.0.2"
-PGDATA="/var/lib/postgresql/replicate_data"
+PGDATA="/var/lib/postgresql/data"
 
 if [ ! "$(ls -A $PGDATA)" ];then
       export PGPASSWORD=secret && pg_basebackup -h $PRIMARY_IP -U replicator -p 5432 -D $PGDATA -Fp -Xs -P -R
